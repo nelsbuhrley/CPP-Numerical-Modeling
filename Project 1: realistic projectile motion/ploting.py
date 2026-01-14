@@ -2,6 +2,8 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import sys
 
+
+# Should automatically share run when running from cpp workspace
 # open csv file in with the path
 # f/Users/nelsbuhrley/CPP_Workspace/Project 1: realistic projectile motion/Output/trajectory{i}.csv
 # ask the user for "i" value
