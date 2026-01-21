@@ -34,9 +34,9 @@ void oscillator::computeDerivatives(const std::vector<double>& state,
     // Derivative of angle is angular velocity
     derivatives[1] = angularVelocity;
     // Derivative of angular velocity (equation of motion)
-    double gravityTerm = -(9.81 / length) * sin(angle);
+    double gravityTerm = -(9.8 / length) * sin(angle);
     double dampingTerm = -(dampingCoefficient / mass) * angularVelocity;
-    double drivingTerm = (drivingForce / mass) * cos(drivingFrequency * time);
+    double drivingTerm = (drivingForce / mass) * sin(drivingFrequency * time);
 
     derivatives[2] = gravityTerm + dampingTerm + drivingTerm;
 };

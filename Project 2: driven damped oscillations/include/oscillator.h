@@ -42,6 +42,17 @@ class oscillator {
     std::vector<double> getState() const;
 
     void printParameters() const;
+
+    // Returns a lambda function that wraps computeDerivatives for use with rk4Simulation
+    auto getDerivativeFunction() {
+        return [this](const std::vector<double>& state, std::vector<double>& derivatives,
+                      double time) { computeDerivatives(state, derivatives, time); };
+    }
+
+    // Returns a stop condition lambda that continues while time < maxTime
+    auto getStopCondition(double maxTime = 180.0) {
+        return [maxTime](const std::vector<double>& state) { return state[0] < maxTime; };
+    }
 };
 
 // A mass of 1.00 kg.
@@ -53,6 +64,9 @@ class oscillator {
 // Use a time step small enough that your results are stable.
 // A driving force of 1.20 N.
 // A driving frequency of 2/3 rad/s.
+
+//  oscillator(double mass_, double length_, double dampingCoefficient_, double initialAngle_,
+//                double initialAngularVelocity_, double drivingForce_, double drivingFrequency_);
 
 class testOscillator : public oscillator {
    public:
