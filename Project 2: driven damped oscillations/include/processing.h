@@ -22,7 +22,7 @@ class logic {
    public:
     void run();
     void outputResults(const std::vector<std::vector<double>>& path, const std::string& filename,
-                       double maxPlotTime, double driverFrequency);
+                       double maxPlotTime, double driverFrequency, std::string dataInfo = "");
     void runValidationTest();
     void runCustomSimulation();
 };

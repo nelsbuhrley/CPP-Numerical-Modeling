@@ -89,7 +89,7 @@ std::vector<state_type> euler_chromer(
 }  // namespace integrator
 
 void logic::outputResults(const std::vector<std::vector<double>>& path, const std::string& filename,
-                          double maxPlotTime, double driverFrequency) {
+                          double maxPlotTime, double driverFrequency, std::string dataInfo) {
     int i = 0;
     std::string baseFilename = filename;
     std::string finalFilename = baseFilename.substr(0, baseFilename.find_last_of('.')) + "_" +
@@ -103,6 +103,7 @@ void logic::outputResults(const std::vector<std::vector<double>>& path, const st
 
     std::ofstream outFile(finalFilename);
     if (outFile.is_open()) {
+        outFile << dataInfo << "\n";
         outFile << "Time,Angle,AngularVelocity\n";
         for (const auto& state : path) {
             outFile << state[0] << "," << state[1] << "," << state[2] << "\n";
@@ -113,15 +114,15 @@ void logic::outputResults(const std::vector<std::vector<double>>& path, const st
         std::cerr << "Error: Unable to open output file." << std::endl;
     }
 
-    // call the ploting program
+    // call the plotting program
 
-    std::string plotCommand = "python3 ploting.py " + finalFilename + " " +
+    std::string plotCommand = "python3 plotting.py " + finalFilename + " " +
                               std::to_string(maxPlotTime) + " " + std::to_string(driverFrequency);
 
     std::cout << "Executing plot command: " << plotCommand << std::endl;
     int plotResult = system(plotCommand.c_str());
     if (plotResult != 0) {
-        std::cerr << "Error: Plotting command failed with code " << plotResult << std::endl;
+        std::cerr << "Error: plotting command failed with code " << plotResult << std::endl;
     };
 }
 
@@ -164,7 +165,26 @@ void logic::runValidationTest() {
               << ", Angular Velocity = " << path.front()[2] << std::endl;
     std::cout << "Final state: Time = " << path.back()[0] << ", Angle = " << path.back()[1]
               << ", Angular Velocity = " << path.back()[2] << std::endl;
-    outputResults(path, "Output/oscillator_output.csv", 180, osc.drivingFrequency);
+
+    std::string dataInfo =                                                         //
+        std::string("# Initial Parameters: ")                                        //
+        + "\n#    Mass: " + std::to_string(osc.mass)                                 //
+        + "\n#    Length: " + std::to_string(osc.length)                             //
+        + "\n#    Damping Coefficient: " + std::to_string(osc.dampingCoefficient)    //
+        + "\n#    Initial Angle: " + std::to_string(osc.angle)                       //
+        + "\n#    Initial Angular Velocity: " + std::to_string(osc.angularVelocity)  //
+        + "\n#    Driving Force: " + std::to_string(osc.drivingForce)                //
+        + "\n#    Driving Frequency: " + std::to_string(osc.drivingFrequency)        //
+        + "\n# Integration Information:"                                             //
+        + "\n#    Time Step: " + std::to_string(timeStep)                            //
+        + "\n#    Total Simulation Time: " + std::to_string(path.back()[0])          //
+        + "\n#    Integration Method: Euler-Cromer"                                  //
+        + "\n# Final State:"                                                         //
+        + "\n#    Time = " + std::to_string(path.back()[0])                          //
+        + "\n#    Angle = " + std::to_string(path.back()[1])                         //
+        + "\n#    Angular Velocity = " + std::to_string(path.back()[2]);
+
+    outputResults(path, "Output/oscillator_output.csv", 180, osc.drivingFrequency, dataInfo);
 };
 //  oscillator(double mass_, double length_, double dampingCoefficient_, double initialAngle_,
 //                double initialAngularVelocity_, double drivingForce_, double drivingFrequency_);
@@ -216,5 +236,25 @@ void logic::runCustomSimulation() {
               << ", Angular Velocity = " << path.front()[2] << std::endl;
     std::cout << "Final state: Time = " << path.back()[0] << ", Angle = " << path.back()[1]
               << ", Angular Velocity = " << path.back()[2] << std::endl;
-    outputResults(path, "Output/oscillator_output.csv", maxPlotTime, osc.drivingFrequency);
+
+
+    std::string dataInfo =                                                         //
+        std::string("# Initial Parameters: ")                                        //
+        + "\n#    Mass: " + std::to_string(osc.mass)                                 //
+        + "\n#    Length: " + std::to_string(osc.length)                             //
+        + "\n#    Damping Coefficient: " + std::to_string(osc.dampingCoefficient)    //
+        + "\n#    Initial Angle: " + std::to_string(osc.angle)                       //
+        + "\n#    Initial Angular Velocity: " + std::to_string(osc.angularVelocity)  //
+        + "\n#    Driving Force: " + std::to_string(osc.drivingForce)                //
+        + "\n#    Driving Frequency: " + std::to_string(osc.drivingFrequency)        //
+        + "\n# Integration Information:"                                             //
+        + "\n#    Time Step: " + std::to_string(timeStep)                            //
+        + "\n#    Total Simulation Time: " + std::to_string(path.back()[0])          //
+        + "\n#    Integration Method: Euler-Cromer"                                  //
+        + "\n# Final State:"                                                         //
+        + "\n#    Time = " + std::to_string(path.back()[0])                          //
+        + "\n#    Angle = " + std::to_string(path.back()[1])                         //
+        + "\n#    Angular Velocity = " + std::to_string(path.back()[2]);
+
+    outputResults(path, "Output/oscillator_output.csv", maxPlotTime, osc.drivingFrequency, dataInfo);
 };

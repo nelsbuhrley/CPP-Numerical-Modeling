@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Advanced Oscillator Plotting Tool
+Advanced Oscillator plotting Tool
 Designed to be called by other programs or run interactively.
 Creates 4 plots: angle vs time, wrapped angle vs time, phase space, and Poincaré section.
 """
@@ -35,7 +35,7 @@ def get_parameters():
     else:
         # Interactive mode - prompt user for input
         print("=" * 60)
-        print("Advanced Oscillator Plotting Tool")
+        print("Advanced Oscillator plotting Tool")
         print("=" * 60)
         print()
 
@@ -51,7 +51,7 @@ def load_data(csv_filepath):
     if not os.path.exists(csv_filepath):
         raise FileNotFoundError(f"CSV file not found: {csv_filepath}")
 
-    data = pd.read_csv(csv_filepath)
+    data = pd.read_csv(csv_filepath, comment='#')
 
     # Validate required columns
     required_cols = ['Time', 'Angle', 'AngularVelocity']
@@ -187,7 +187,7 @@ def main():
         # Create plots
         create_plots(data, max_plot_time, driver_frequency, output_filepath)
 
-        print("\nPlotting complete!")
+        print("\nplotting complete!")
 
     except Exception as e:
         print(f"\nError: {e}", file=sys.stderr)
