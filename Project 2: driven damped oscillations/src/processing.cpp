@@ -216,5 +216,5 @@ void logic::runCustomSimulation() {
               << ", Angular Velocity = " << path.front()[2] << std::endl;
     std::cout << "Final state: Time = " << path.back()[0] << ", Angle = " << path.back()[1]
               << ", Angular Velocity = " << path.back()[2] << std::endl;
-    outputResults(path, "Output/oscillator_output_custom.csv", maxPlotTime, osc.drivingFrequency);
+    outputResults(path, "Output/oscillator_output.csv", maxPlotTime, osc.drivingFrequency);
 };
