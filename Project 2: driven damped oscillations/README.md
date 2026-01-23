@@ -42,6 +42,8 @@ Project 2: driven damped oscillations/
     └── oscillator_output_*.csv
 ```
 
+Due to the large size of output files they are not included in the repository
+
 ## Features
 
 ### Numerical Integration Methods
