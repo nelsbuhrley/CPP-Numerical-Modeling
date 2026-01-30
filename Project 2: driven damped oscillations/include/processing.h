@@ -12,8 +12,6 @@
 #include <functional>
 #include <vector>
 
-// TODO: Declare your data processing functions here.
-
 /**
  * @namespace integrator
  * @brief Contains numerical integration algorithms for ODE systems
