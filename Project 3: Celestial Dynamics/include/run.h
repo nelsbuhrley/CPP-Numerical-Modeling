@@ -20,7 +20,7 @@ using namespace std;
  * - Follow prompts to select simulation type and parameters
  * - Results are output to data files for analysis and visualization
  *
- * 
+ *
  */
 
 class Run {
@@ -231,6 +231,22 @@ class Run {
         CelestialObject neptune(5.15e-5, {30.07, 0.0, 0.0}, {0.0, 1.14, 0.0}, "Neptune");
         CelestialObject pluto(6.55e-9, {39.48, 0.0, 0.0}, {0.0, 0.99, 0.0}, "Pluto");
 
+        // Moons
+        CelestialObject moon(3.694e-8, {1.00257, 0.0, 0.0},
+                                 {0.0, 6.283 + 0.0748 * M_PI, 0.0}, "Moon");
+        CelestialObject phobos(1.0659e-10, {1.524 + 0.0000628, 0.0, 0.0},
+                                   {0.0, 5.08 + 0.00353, 0.0}, "Phobos");
+        CelestialObject deimos(1.4762e-11, {1.524 + 0.000156, 0.0, 0.0},
+                                   {0.0, 5.08 + 0.00135, 0.0}, "Deimos");
+        CelestialObject europa(2.53e-8, {5.203 + 0.00449, 0.0, 0.0},
+                                    {0.0, 2.76 + 0.01374, 0.0}, "Europa");
+        CelestialObject ganymede(7.80e-8, {5.203 + 0.00715, 0.0, 0.0},
+                                     {0.0, 2.76 + 0.01088, 0.0}, "Ganymede");
+        CelestialObject callisto(5.70e-8, {5.203 + 0.01258, 0.0, 0.0},
+                                     {0.0, 2.76 + 0.00820, 0.0}, "Callisto");
+        CelestialObject titan(2.37e-7, {9.537 + 0.00817, 0.0, 0.0},
+                                   {0.0, 2.04 + 0.01256, 0.0}, "Titan");
+
         system.addObject(sun);
         system.addObject(mercury);
         system.addObject(venus);
@@ -241,8 +257,17 @@ class Run {
         system.addObject(uranus);
         system.addObject(neptune);
         system.addObject(pluto);
-        integrationParameters[0] = 0.01;  // time step in years
-        integrationParameters[1] = 30.0;  // total time in years
+
+        system.addObject(moon);
+        system.addObject(phobos);
+        system.addObject(deimos);
+        system.addObject(europa);
+        system.addObject(ganymede);
+        system.addObject(callisto);
+        system.addObject(titan);
+        
+        integrationParameters[0] = 0.001;  // time step in years
+        integrationParameters[1] = 45.0;  // total time in years
         integratorChoice = 3;             // Verlet
     }
 

@@ -30,8 +30,8 @@ Z_RANGE_FRACTION = 0.1    # Z-axis is this fraction of XY range (flatter view)
 
 # Animation settings
 ANIMATION_FPS = 20              # Frames per second (higher = smoother but larger file)
-TARGET_FRAMES = 1000             # Target number of frames in animation (auto-calculates skip)
-TRAIL_FRACTION = 0.018            # Fraction of animation to show as trail (0 = no trail, 1 = full)
+TARGET_FRAMES = 1500             # Target number of frames in animation (auto-calculates skip)
+TRAIL_FRACTION = 0.02            # Fraction of animation to show as trail (0 = no trail, 1 = full)
 ANIMATION_DPI = 100             # Lower DPI for faster rendering (100 is good balance)
 
 # Plot appearance
