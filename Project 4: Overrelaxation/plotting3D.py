@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from matplotlib.widgets import Slider
 
 # 1. Load Data
-data = np.load("output.npz")
+data = np.load("output600.npz")
 potential = data["potential"]
 depth, rows, cols = potential.shape
 center = depth // 2

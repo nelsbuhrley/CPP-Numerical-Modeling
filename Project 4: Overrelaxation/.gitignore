@@ -1,4 +1,6 @@
 # Output files
+output400.csv
+output400.npz
 output.csv
 output.npz
 *.csv

@@ -11,7 +11,7 @@ int main() {
     // Run app;  // Create the application controller
     // app.runSimulation();  // Launch the interactive simulation interface
     std::cout << "Starting overrelaxation simulation...\n";
-    int N = 400;                     // Grid size
+    int N = 600;                     // Grid size
     double physicalDimensions = 1; // 1 meter cube
     PotentialField field(N, physicalDimensions);
     field.test_param();

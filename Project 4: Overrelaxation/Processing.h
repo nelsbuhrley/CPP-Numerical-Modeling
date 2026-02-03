@@ -95,7 +95,7 @@ class PotentialField {
         : N(N), physicalDimensions(physicalDimensions) {
         u = allocate3DArray(N);
         f = allocate3DArray(N);
-        omega = 2 / (1 + std::sqrt(2) + std::sin(3.14159 / N));  // Optimal omega for SOR
+        omega = 2 / (1 + std::sin(3.141592653589793238462643383279 / N));  // Optimal omega for SOR
         NDimensions = physicalDimensions / N;
 // Initialize u and f to zero
 #pragma omp parallel for collapse(3) schedule(static)
@@ -157,7 +157,7 @@ class PotentialField {
     }
 
     double voltageOfPointCharge(double q) {
-        return q / (4 * 3.14159 * 8.854e-12 * 0.01 / 2);  // V = q / (4πε₀r), r=(NDimensions/2)
+        return q / (4 * 3.141592653589793238462643383279 * 8.854e-12 * 0.01 / 2);  // V = q / (4πε₀r), r=(NDimensions/2)
     }
 
     void runSimulation(int maxIterations, double tolerance) {
