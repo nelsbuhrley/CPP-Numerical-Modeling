@@ -1,0 +1,12 @@
+# Output files
+output.csv
+output.npz
+*.csv
+*.npz
+
+# Binaries
+bin/
+
+# Profile-guided optimization files
+*.profdata
+*.profraw
