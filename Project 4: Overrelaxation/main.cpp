@@ -11,7 +11,7 @@ int main() {
     // Run app;  // Create the application controller
     // app.runSimulation();  // Launch the interactive simulation interface
     std::cout << "Starting overrelaxation simulation...\n";
-    int N = 600;                     // Grid size
+    int N = 150;                     // Grid size
     double physicalDimensions = 1; // 1 meter cube
     PotentialField field(N, physicalDimensions);
     field.test_param();
@@ -46,4 +46,7 @@ int main() {
  *
  * Overall, using SOR with an optimal omega and parallelization makes solving large 3D potential problems feasible.
  *
+ *
+ * Final point:
+ * Given a baseline of 17 seconds to solve the equation 
  */
