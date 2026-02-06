@@ -6,20 +6,28 @@
 
 #include "Processing.h"
 
+/**
+ * Header
+ *
+ * This program implements the Successive Over-Relaxation (SOR) method to solve Laplace's equation in 3D.
+ *
+ * Author: Nels Buhrley
+ * Date: 2024-06-01
+ */
 
 int main() {
     // Run app;  // Create the application controller
     // app.runSimulation();  // Launch the interactive simulation interface
     std::cout << "Starting overrelaxation simulation...\n";
-    int N = 150;                     // Grid size
-    double physicalDimensions = 1; // 1 meter cube
+
+    int N = 300;                    // Grid size
+    double physicalDimensions = 1;  // dimentions in meters cube
+    double tolerance = 4e-10;       // Convergence tolerance
+
     PotentialField field(N, physicalDimensions);
-    field.test_param();
-    field.runSimulation(4000, 4e-10);  // Max 100000 iterations, tolerance 1e-20
-    std::cout << "Simulation complete.\n";
-    field.outputResultsToCSV("output.csv", "# Simulation results");
-    field.exportTodotnpz("output.npz");
-    std::cout << "Results saved to output.csv and output.npz\n";
+    field.test_param();                 // Set up test parameters (charge distribution and boundary conditions)
+    field.runSimulation(tolerance);     // Run simulation with max iterations defined by 6 * N and tolerance
+    field.save();                       // Save results to CSV and NPZ files
 
     return 0;
 };
@@ -42,11 +50,13 @@ int main() {
  * standard SOR cannot be parallelized easily due to data dependencies.
  * However, red-black SOR or other techniques can be used to enable parallel updates.
  *
- * The calculation of the residual and the output of results is also parallelized to improve performance.
+ * The calculation of the residual and the output of results is also parallelized to improve
+ * performance.
  *
- * Overall, using SOR with an optimal omega and parallelization makes solving large 3D potential problems feasible.
+ * Overall, using SOR with an optimal omega and parallelization makes solving large 3D potential
+ * problems feasible.
  *
  *
  * Final point:
- * Given a baseline of 17 seconds to solve the equation 
+ * Given a baseline of 17 seconds to solve the equation to
  */

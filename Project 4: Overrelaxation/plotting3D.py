@@ -2,8 +2,21 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.widgets import Slider
 
+"""
+Header
+This script loads the 3D potential field data from 'output.npz' and creates
+ an interactive 3D surface plot of the potential field.
+ A slider allows you to explore different z-slices of the data.
+ The center slice (z = N/2) is saved as a high-resolution image
+ 'potential_3D_center_slice.png' with a resolution of 300 DPI.
+ The interactive plot allows you to rotate and explore the potential field in 3D.
+
+Author: Nels Buhrley
+Date: 2024-06-01
+"""
+
 # 1. Load Data
-data = np.load("output600.npz")
+data = np.load("output.npz")
 potential = data["potential"]
 depth, rows, cols = potential.shape
 center = depth // 2
@@ -83,8 +96,27 @@ cbar.set_label('Potential (V)', fontsize=12)
 ax_save.view_init(elev=25, azim=45)
 
 # Save high-quality image
-plt.savefig('potential_3D_center_slice.png', dpi=300, bbox_inches='tight')
+# Add interactive angle adjustment before saving
+ax_save.view_init(elev=25, azim=45)
+
+# Create slider for interactive angle adjustment
+fig_angle = plt.figure(figsize=(10, 3))
+ax_elev = plt.axes([0.2, 0.6, 0.6, 0.03])
+ax_azim = plt.axes([0.2, 0.3, 0.6, 0.03])
+
+slider_elev = Slider(ax_elev, 'Elevation', 0, 90, valinit=25, valstep=1)
+slider_azim = Slider(ax_azim, 'Azimuth', 0, 360, valinit=45, valstep=1)
+
+def update_angle(val):
+    ax_save.view_init(elev=slider_elev.val, azim=slider_azim.val)
+    fig_save.canvas.draw_idle()
+
+slider_elev.on_changed(update_angle)
+slider_azim.on_changed(update_angle)
+
+# Save BEFORE showing (to preserve the figure)
+fig_save.savefig('potential_3D_center_slice.png', dpi=300, bbox_inches='tight')
 print(f"Saved 3D plot at z={center} to 'potential_3D_center_slice.png'")
-plt.close(fig_save)
 
 plt.show()
+plt.close(fig_save)

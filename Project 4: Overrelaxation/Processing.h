@@ -15,6 +15,16 @@
 #ifndef PROCESSING_H
 #define PROCESSING_H
 
+/**
+ * Header
+ *
+ * This header defines the PotentialField class which implements the Successive Over-Relaxation (SOR) method
+ * to solve Laplace's equation in 3D. It includes methods for setting up test parameters, running the simulation, computing the residual, and outputting results to CSV and NPZ files
+ *
+ * Author: Nels Buhrley
+ * Date: 2024-06-01
+ */
+
 // red-black ordering for 3D grid with OpenMP parallelization
 
 void redOrBlackUpdate(double*** u, double*** f, int N, double omega, uint8_t evenOrOdd) {
@@ -23,7 +33,7 @@ void redOrBlackUpdate(double*** u, double*** f, int N, double omega, uint8_t eve
         for (int j = 1; j < N - 1; j++) {
             int kStart = ((i + j) % 2 == evenOrOdd) ? 1 : 2;
             for (int k = kStart; k < N - 1; k += 2) {
-                if (true) {
+                if (f[i][j][k] == 0.0) {  // Only update non-boundary points
                     double u_relax = (1.0 / 6.0) * (u[i + 1][j][k] + u[i - 1][j][k] +
                                                     u[i][j + 1][k] + u[i][j - 1][k] +
                                                     u[i][j][k + 1] + u[i][j][k - 1] - f[i][j][k]);
@@ -70,11 +80,14 @@ double computeResidual(double*** u, double*** f, int N) {
     for (int i = 1; i < N - 1; i++) {
         for (int j = 1; j < N - 1; j++) {
             for (int k = 1; k < N - 1; k++) {
-                double laplacian = u[i + 1][j][k] + u[i - 1][j][k] + u[i][j + 1][k] +
-                                   u[i][j - 1][k] + u[i][j][k + 1] + u[i][j][k - 1] -
-                                   6.0 * u[i][j][k];
-                double r = laplacian - f[i][j][k];
-                residual_squared += r * r;
+                // Only compute residual at non-boundary points (where f == 0)
+                if (f[i][j][k] == 0.0) {
+                    double laplacian = u[i + 1][j][k] + u[i - 1][j][k] + u[i][j + 1][k] +
+                                       u[i][j - 1][k] + u[i][j][k + 1] + u[i][j][k - 1] -
+                                       6.0 * u[i][j][k];
+                    double r = laplacian - f[i][j][k];
+                    residual_squared += r * r;
+                }
             }
         }
     }
@@ -131,8 +144,8 @@ class PotentialField {
         // +1 uC point charge at (25,0,0) cm and (0,25,0) cm
         // -1 uC point charge at (-25,0,0) cm and (0,-25,0) cm
         center = N / 2;
-        double chargeMagnitude = 1e-6;
-        double pointVoltage = voltageOfPointCharge(chargeMagnitude) / 2000000;
+        double chargeMagnitude = 1e-6;  // 1 microCoulomb
+        double pointVoltage = voltageOfPointCharge(chargeMagnitude) / 4500000;
         // define 1 cm radius sphere around point charge
         int pointRadius = static_cast<int>(0.01 / NDimensions);
         for (int i = center - pointRadius; i <= center + pointRadius; i++) {
@@ -157,10 +170,12 @@ class PotentialField {
     }
 
     double voltageOfPointCharge(double q) {
-        return q / (4 * 3.141592653589793238462643383279 * 8.854e-12 * 0.01 / 2);  // V = q / (4πε₀r), r=(NDimensions/2)
+        return q / (4 * 3.141592653589793238462643383279 * 8.854e-12 * 0.01 /
+                    2);  // V = q / (4πε₀r), r=(NDimensions/2)
     }
 
-    void runSimulation(int maxIterations, double tolerance) {
+    void runSimulation(double tolerance) {
+        int maxIterations = 8 * N;
         for (int iter = 0; iter < maxIterations; iter++) {
             fullStep(u, f, N, omega);
             if (iter % 100 == 0 || iter == maxIterations - 1) {
@@ -175,6 +190,7 @@ class PotentialField {
                 }
             }
         }
+        std::cout << "Simulation complete.\n";
     }
 
     void outputResultsToCSV(const std::string& filename, std::string metadata) {
@@ -211,8 +227,8 @@ class PotentialField {
             for (int j = 0; j < N; j++) {
                 section += std::string("\t") + "y" + std::to_string(j) + "\n";
                 for (int i = 0; i < N; i++) {
-                    section +=
-                        std::string("\t\t") + "x" + std::to_string(i) + "\t" + std::to_string(u[i][j][k]) + "\n";
+                    section += std::string("\t\t") + "x" + std::to_string(i) + "\t" +
+                               std::to_string(u[i][j][k]) + "\n";
                 }
             }
         }
@@ -238,6 +254,12 @@ class PotentialField {
                         static_cast<unsigned long>(N)},
                        "w");
     }
+
+    void save() {
+        outputResultsToCSV("output.csv", "# Simulation results");
+        exportTodotnpz("output.npz");
+        std::cout << "Results saved to output.csv and output.npz\n";
+    };
 };
 
 #endif
