@@ -48,6 +48,10 @@ perf.data*
 # Thumbnails
 Thumbs.db
 
+# Output data files
+*.csv
+*.npz
+
 # Temporary files
 *~
 *.swp

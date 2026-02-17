@@ -18,8 +18,10 @@
 /**
  * Header
  *
- * This header defines the PotentialField class which implements the Successive Over-Relaxation (SOR) method
- * to solve Laplace's equation in 3D. It includes methods for setting up test parameters, running the simulation, computing the residual, and outputting results to CSV and NPZ files
+ * This header defines the PotentialField class which implements the Successive Over-Relaxation
+ * (SOR) method to solve Laplace's equation in 3D. It includes methods for setting up test
+ * parameters, running the simulation, computing the residual, and outputting results to CSV and NPZ
+ * files
  *
  * Author: Nels Buhrley
  * Date: 2024-06-01
