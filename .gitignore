@@ -52,6 +52,11 @@ Thumbs.db
 *.csv
 *.npz
 
+# Anamations
+*.mp4
+*.avi
+*.mov
+
 # Temporary files
 *~
 *.swp
