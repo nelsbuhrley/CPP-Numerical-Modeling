@@ -19,7 +19,7 @@
  *File Header
  *
  *Author: Nels Buhrley
- *Date: 2024-06-01
+ *Date: 2026-17-02
  *Description:
  *This header defines the `string` class which simulates oscillations on a string using a finite
  * difference method. It allows for superimposing Gaussian disturbances, sine waves, and natural
