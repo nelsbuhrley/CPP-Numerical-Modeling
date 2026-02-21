@@ -57,6 +57,11 @@ Thumbs.db
 *.avi
 *.mov
 
+# Plots
+*.png
+*.jpg
+*.jpeg
+
 # Temporary files
 *~
 *.swp

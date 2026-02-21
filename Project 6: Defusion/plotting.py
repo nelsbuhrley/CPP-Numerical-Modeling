@@ -14,7 +14,7 @@ Description:
 """
 
 # ── Load data ────────────────────────────────────────────────────────────────
-npz_path = os.path.join(os.path.dirname(__file__), "defusion_output.npz")
+npz_path = os.path.join(os.path.dirname(__file__), "output/defusion_output.npz")
 data = np.load(npz_path)
 metadata = data['metadata']  # shape: (2,)
 cube_size = metadata[0]
@@ -57,7 +57,7 @@ ani = animation.FuncAnimation(
 )
 
 # ── Save animation ─────────────────────────────────────────────────────────
-ani.save(os.path.join(os.path.dirname(__file__), "diffusion_animation.mp4"), writer='ffmpeg', fps=FPS)
+ani.save(os.path.join(os.path.dirname(__file__), "output/diffusion_animation.mp4"), writer='ffmpeg', fps=FPS)
 
 # ── Create static plot of Squared Mean Distance over time ───────────────────────────────────────
 smd = data['rRMS'] ** 2  # shape: (steps,)
@@ -69,6 +69,6 @@ plt.ylabel('Squared Mean Distance (m²)')
 plt.title('Squared Mean Distance from Origin Over Time')
 plt.legend()
 plt.grid()
-plt.savefig(os.path.join(os.path.dirname(__file__), "Mean_Squared_Distance_plot.png"))
+plt.savefig(os.path.join(os.path.dirname(__file__), "output/Mean_Squared_Distance_plot.png"))
 
 # __END__

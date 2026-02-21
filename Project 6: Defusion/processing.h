@@ -53,9 +53,9 @@ class Space {
         const float cosPhi =
             1.f - 2.f * v;  // Cosine of polar angle (uniform distribution on sphere)
         const float sinPhi = std::sqrt(1.f - cosPhi * cosPhi);
-        // const float r = movementRadius * std::cbrt(unitDist(generator));
-        // r = movementRadius * unitDist(generator);
-        const float r = movementRadius;  // Fixed radius
+        const float r = movementRadius * std::cbrt(unitDist(generator));
+        // const float r = movementRadius * unitDist(generator);
+        // const float r = movementRadius;  // Fixed radius
         const float rSinPhi = r * sinPhi;
 
         std::array<float, 3>& pl = points[step - 1][index];

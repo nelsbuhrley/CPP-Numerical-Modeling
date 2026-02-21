@@ -20,7 +20,7 @@ int main() {
     float cubeSize = 1.f;         // 1 m cube
     size_t steps = 1000;
     size_t numPoints = 2500;
-    std::string outputFilename = "defusion_output";
+    std::string outputFilename = "output/defusion_output";
     Space space(movementRadius, cubeSize, steps, numPoints);
     space.Propagate();
     space.calculateRMS();
