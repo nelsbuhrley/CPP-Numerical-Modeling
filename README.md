@@ -28,7 +28,7 @@ Simulates a driven damped pendulum governed by a nonlinear ODE. Supports RK4 and
 Interactive N-body gravitational simulation. Prompts the user to configure bodies and integration parameters, then outputs trajectories for Python visualization.
 
 ### Project 4: Overrelaxation
-Solves Laplace's equation on a 3D grid using Successive Over-Relaxation (SOR). Parallelized with OpenMP. Outputs the resulting potential field to CSV and NPZ.
+Solves Laplace's equation on a 3D grid using Red Black Successive Over-Relaxation (SOR). Parallelized with OpenMP. Outputs the resulting potential field to CSV and NPZ.
 
 ### Project 5: Oscillations on a String
 Finite-difference simulation of transverse string oscillations. Supports Gaussian, sine, and natural-mode initial conditions. FFT analysis (via KissFFT) produces frequency spectra. Parallelized with OpenMP.
