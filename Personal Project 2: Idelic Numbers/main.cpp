@@ -6,12 +6,13 @@
 #include <memory>
 #include <thread>
 #include <vector>
+#include <omp.h>
 
 // Sieve-based multithreaded idoneal number finder (proven correct)
-void markNonIdoneal(char* sieve, int limit, int threadId, int numThreads) {
+void markNonIdoneal(char* sieve, int limit) {
     int maxVal = (int)std::sqrt(limit) + 1;
-
-    for (int a = threadId + 1; a < maxVal; a += numThreads) {
+#pragma omp parallel for schedule(dynamic)
+    for (int a = 1; a < maxVal; a++) {
         for (int b = a + 1; b < maxVal; b++) {
             for (int c = b + 1; c < maxVal; c++) {
                 long long value = (long long)a * b + (long long)b * c + (long long)a * c;
@@ -32,7 +33,7 @@ int main() {
     // ab + bc + ac for distinct positive integers a, b, and c.
 
     const int LIMIT = 50000000;  // 10^7
-    const int NUM_THREADS = std::thread::hardware_concurrency();
+    const int NUM_THREADS = omp_get_max_threads();
 
     std::cout << "Finding idoneal numbers up to " << LIMIT << " using " << NUM_THREADS
               << " threads...\n";
@@ -43,18 +44,7 @@ int main() {
     // Initialize sieve: 0 = idoneal, 1 = not idoneal
     std::vector<char> sieve(LIMIT, 0);
 
-    // Launch threads to mark non-idoneal numbers
-    std::vector<std::thread> threads;
-    threads.reserve(NUM_THREADS);
-
-    for (int t = 0; t < NUM_THREADS; t++) {
-        threads.emplace_back(markNonIdoneal, sieve.data(), LIMIT, t, NUM_THREADS);
-    }
-
-    // Wait for all threads to complete
-    for (auto& thread : threads) {
-        thread.join();
-    }
+    markNonIdoneal(sieve.data(), LIMIT);
 
     std::cout << "Sieve complete. Collecting idoneal numbers..." << std::endl;
 
