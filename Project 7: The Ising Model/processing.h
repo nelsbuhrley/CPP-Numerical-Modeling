@@ -5,6 +5,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <random>
 
 #define _USE_MATH_DEFINES
 
@@ -27,40 +28,57 @@ class Material {
     float temperature;     // Temperature of the system
     float h;   // Total magnetization of the system
     int numIterations; // Number of iterations to run the simulation
-    bool periodicBoundary;  // Whether to use periodic boundary conditions
 
-    std::vector<std::vector<std::vector<int8_t>>> spins;  // 3D array: [x][y][z]
+    std::vector<int8_t> spins;  // 3D array: [x][y][z]
 
     float deltaE_table[2][7]; // Precomputed energy changes for spin flips
     float exp_table[2][7]; // Precomputed exp(-ΔE/T) values
 
     std::uniform_real_distribution<float> distribution; // For random number generation
     std::mt19937 gen; // Mersenne Twister RNG
+    uint32_t seed; // Seed for RNG
 
     public:
-    Material(int n, float temperature, float magnetization, int numIterations, bool periodicBoundary)
-        : n(n), temperature(temperature), h(magnetization), numIterations(numIterations), periodicBoundary(periodicBoundary) {
-        // Initialize spins randomly to +1 or -1
-        spins.resize(n, std::vector<std::vector<int8_t>>(n, std::vector<int8_t>(n)));
-        for (int x = 0; x < n; x++) {
-            for (int y = 0; y < n; y++) {
-                for (int z = 0; z < n; z++) {
-                    spins[x][y][z] = (rand() % 2) * 2 - 1;  // Randomly +1 or -1
+    Material(int n, float temperature, float magnetization, int numIterations, uint32_t seed)
+        : n(n+2), temperature(temperature), h(magnetization), numIterations(numIterations), seed(seed) {
+        establishRNG();
+        initializeSpinsRandomly();
+        precalculateEnergyTables();
+
+    }
+
+    Material(int n, float temperature, float magnetization, int numIterations, int8_t initialSpinValue, uint32_t seed)
+        : n(n+2), temperature(temperature), h(magnetization), numIterations(numIterations), seed(seed) {
+        establishRNG();
+        initializeSpinsUniformly(initialSpinValue);
+        precalculateEnergyTables();
+
+    }
+
+    inline int8_t getSpin(int x, int y, int z) {
+        return spins[x * n * n + y * n + z];
+    }
+
+    inline void setSpin(int x, int y, int z, int8_t value) {
+        spins[x * n * n + y * n + z] = value;
+    }
+
+    void initializeSpinsRandomly() {
+        spins.resize(n * n * n);
+        for (int x = 1; x < n-1; x++) {
+            for (int y = 1; y < n-1; y++) {
+                for (int z = 1; z < n-1; z++) {
+                    setSpin(x, y, z, (distribution(gen) < 0.5 ? -1 : 1));  // Randomly +1 or -1
                 }
             }
         }
-        precalculateEnergyTables();
     }
 
-    Material(int n, float temperature, float magnetization, int numIterations, bool periodicBoundary, int8_t initialSpinValue)
-        : n(n), temperature(temperature), h(magnetization), numIterations(numIterations), periodicBoundary(periodicBoundary) {
-        // Initialize all spins to the specified value (+1 or -1)
-        if (initialSpinValue != 1 && initialSpinValue != -1) {
-            throw std::invalid_argument("Initial spin value must be +1 or -1");
+    void initializeSpinsUniformly(int8_t spinValue) {
+        if (spinValue != 1 && spinValue != -1) {
+            throw std::invalid_argument("Spin value must be +1 or -1");
         }
-        spins.resize(n, std::vector<std::vector<int8_t>>(n, std::vector<int8_t>(n, initialSpinValue)));
-
-        precalculateEnergyTables();
+        spins.resize(n * n * n, spinValue);
     }
 
     void precalculateEnergyTables() {
@@ -77,10 +95,10 @@ class Material {
         }
     }
 
+
     void establishRNG() {
         // Thread-safe random number generator setup
-        std::random_device rd;
-        gen = std::mt19937(rd());
+        gen = std::mt19937(seed);
         distribution = std::uniform_real_distribution<float>(0.0, 1.0);
 
 
@@ -88,28 +106,47 @@ class Material {
 
     void flipSpin(int x, int y, int z) {
         // Calculate energy change if we flip this spin
-        uint8_t neighborstate = (spins(x + 1, y, z) + spins(x - 1, y, z) +
-                            spins(x, y + 1, z) + spins(x, y - 1, z) +
-                            spins(x, y, z + 1) + spins(x, y, z - 1)) / 2 + 3; // Map neighbor sum from [-6,6] to [0,6]
-        uint8_t spinState = (spins[x][y][z] + 1) / 2; // Map -1 to 0 and +1 to 1
+        uint8_t neighborstate = (getSpin(x + 1, y, z) + getSpin(x - 1, y, z) +
+                            getSpin(x, y + 1, z) + getSpin(x, y - 1, z) +
+                            getSpin(x, y, z + 1) + getSpin(x, y, z - 1)) / 2 + 3; // Map neighbor sum from [-6,6] to [0,6]
+        uint8_t spinState = (getSpin(x, y, z) + 1) / 2; // Map -1 to 0 and +1 to 1
         // Decide whether to flip the spin
         if (deltaE_table[spinState][neighborstate] <= 0 || (distribution(gen) < exp_table[spinState][neighborstate])) {
-            spins[x][y][z] *= -1;  // Flip the spin
+            setSpin(x, y, z, -getSpin(x, y, z));  // Flip the spin
         }
     }
 
     void iteration() {
+        int x , y , z;
+        for (x = 0; x < n; x++) {
+            for (y = 0; y < n; y++) {
+                setSpin(x, y, 0, getSpin(x, y, n-2));
+                setSpin(x, y, n-1, getSpin(x, y, 1));
+            }
+        }
+        for (x = 0; x < n; x++) {
+            for (z = 0; z < n; z++) {
+                setSpin(x, 0, z, getSpin(x, n-2, z));
+                setSpin(x, n-1, z, getSpin(x, 1, z));
+            }
+        }
+        for (y = 0; y < n; y++) {
+            for (z = 0; z < n; z++) {
+                setSpin(0, y, z, getSpin(n-2, y, z));
+                setSpin(n-1, y, z, getSpin(1, y, z));
+            }
+        }
         // Perform one iteration of algorithm
-        for (int x = 0; x < n; x++) {
-            for (int y = 0; y < n; y++) {
-                for (int z = (x + y) % 2; z < n; z += 2) {
+        for (x = 1; x < n-1; x++) {
+            for (y = 1; y < n-1; y++) {
+                for (z = (x + y) % 2 + 1; z < n-1; z += 2) {
                     flipSpin(x, y, z);
                 }
             }
         }
-        for (int x = 0; x < n; x++) {
-            for (int y = 0; y < n; y++) {
-                for (int z = (x + y + 1) % 2 ; z < n; z += 2) {
+        for (x = 1; x < n-1; x++) {
+            for (y = 1; y < n-1; y++) {
+                for (z = (x + y + 1) % 2 + 1; z < n-1; z += 2) {
                     flipSpin(x, y, z);
                 }
             }
@@ -118,8 +155,9 @@ class Material {
 
     void runSimulation() {
         for (int i = 0; i < numIterations; i++) {
-
             iteration();
         }
     }
-}
+};
+
+#endif // PROCESSING_H
