@@ -1,4 +1,4 @@
-CXX = clang++
+CXX = g++
 CXXFLAGS = -std=c++17 -Iinclude -I../include -I/usr/local/opt/libomp/include -Xpreprocessor -fopenmp
 LDFLAGS = -L/usr/local/opt/libomp/lib -lomp -lz
 
