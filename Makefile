@@ -19,7 +19,7 @@ BIN_DIR = ./bin  # Ensure bin is inside the project directory
 OBJ_DIR = obj
 
 # Source files (add your .cpp files here)
-SOURCES = main.cpp src/oscillator.cpp src/processing.cpp
+SOURCES = main.cpp 
 # For multi-file projects, uncomment and modify:
 # SOURCES = main.cpp src/vector3d.cpp src/particle.cpp
 
