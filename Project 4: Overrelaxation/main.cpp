@@ -20,7 +20,7 @@ int main() {
     // app.runSimulation();  // Launch the interactive simulation interface
     std::cout << "Starting overrelaxation simulation...\n";
 
-    int N = 100;                    // Grid size
+    int N = 1000;                    // Grid size
     double physicalDimensions = 1;  // dimentions in meters cube
     double tolerance = 4e-10;       // Convergence tolerance
 

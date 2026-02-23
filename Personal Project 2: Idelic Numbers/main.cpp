@@ -31,7 +31,7 @@ int main() {
     // A positive integer n is idoneal if and only if it cannot be written as
     // ab + bc + ac for distinct positive integers a, b, and c.
 
-    const int LIMIT = 10000000;  // 10^7
+    const int LIMIT = 50000000;  // 10^7
     const int NUM_THREADS = std::thread::hardware_concurrency();
 
     std::cout << "Finding idoneal numbers up to " << LIMIT << " using " << NUM_THREADS
