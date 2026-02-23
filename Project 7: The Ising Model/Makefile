@@ -10,13 +10,12 @@ RELEASE_FLAGS = -O3 -DNDEBUG \
 	-march=native \
 	-mtune=native \
 	-flto \
-
 	-funroll-loops \
-    -ftree-vectorize \
+	-ftree-vectorize \
 	-fno-math-errno \
 	-fomit-frame-pointer \
 	-finline-functions \
-    -fstrict-aliasing \
+	-fstrict-aliasing \
 	-falign-functions=32 \
 	-falign-loops=32
 
@@ -28,7 +27,7 @@ INCLUDE_DIR = include
 BIN_DIR = bin
 
 # Sources and headers
-SOURCES = main.cpp ../src/cnpy.cpp kiss_fft.c
+SOURCES = main.cpp
 HEADERS = $(wildcard $(INCLUDE_DIR)/*.h)
 
 # Executable name
