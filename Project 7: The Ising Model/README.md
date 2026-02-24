@@ -90,7 +90,7 @@ During the spin update, a neighbor sum is computed, mapped to a table index, and
 
 ### Checkerboard (Black-Red) Decomposition
 
-To eliminate **data race conditions** during spin updates while preserving the ability to parallelize within a sweep, this implementation uses a **checkerboard decomposition** — also known as the black-red or odd-even subgraph partition.
+To eliminate **locational biasies** during spin updates while preserving the ability to parallelize within a sweep, this implementation uses a **checkerboard decomposition** — also known as the black-red or odd-even subgraph partition.
 
 The 3D cubic lattice is colored in two alternating sublattices:
 - **Black sites**: all $(x, y, z)$ with $(x + y + z)$ even
