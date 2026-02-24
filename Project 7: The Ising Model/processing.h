@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 #include <random>
+#include <filesystem>
 
 #define _USE_MATH_DEFINES
 
@@ -95,7 +96,6 @@ class Material {
         }
     }
 
-
     void establishRNG() {
         // Thread-safe random number generator setup
         gen = std::mt19937(seed);
@@ -158,6 +158,88 @@ class Material {
             iteration();
         }
     }
+
+    double getAverageMagnetization() {
+        double totalMagnetization = 0.0;
+        for (int x = 1; x < n-1; x++) {
+            for (int y = 1; y < n-1; y++) {
+                for (int z = 1; z < n-1; z++) {
+                    totalMagnetization += getSpin(x, y, z);
+                }
+            }
+        }
+        return totalMagnetization / ((n-2) * (n-2) * (n-2)); // Average magnetization per spin
+    }
 };
+
+void saveResultsToNPZ(const std::vector<std::vector<double>>& avg_magnetizations, const std::vector<float>& temps, const std::vector<float>& h_values, const std::string& filename)
+{
+    // Convert 2D vector to 1D array for cnpy
+    std::vector<double> magnetization_flat;
+    for (const auto& row : avg_magnetizations) {
+        magnetization_flat.insert(magnetization_flat.end(), row.begin(), row.end());
+    }
+
+    // Save the data to an NPZ file
+    cnpy::npz_save(filename, "avg_magnetizations", magnetization_flat.data(), {h_values.size(), temps.size()}, "w");
+    cnpy::npz_save(filename, "temperatures", temps.data(), {temps.size()}, "a");
+    cnpy::npz_save(filename, "magnetic_fields", h_values.data(), {h_values.size()}, "a");
+}
+
+
+void runIsingSimulation(int n, int iterations, float hMin, float hMax, int numHSteps, float tempMin, float tempMax, int numTempSteps) {
+
+    // 1. Generate the temperature range
+
+    std::vector<float> temps(numTempSteps);
+
+    float tempStep = (tempMax - tempMin) / (numTempSteps - 1);
+    for (int i = 0; i < numTempSteps; i++) {
+        temps[i] = tempMin + i * tempStep;
+    }
+
+    // 2. Generate the magnetic field range
+
+    std::vector<float> h_values(numHSteps);
+
+    float hStep = (hMax - hMin) / (numHSteps - 1);
+    for (int i = 0; i < numHSteps; i++) {
+        h_values[i] = hMin + i * hStep;
+    }
+
+    // 2. The Master RNG (Runs on a single thread)
+    std::random_device rd;
+    std::mt19937 master_gen(rd());
+    std::uniform_int_distribution<uint32_t> seed_dist;
+
+    // 3. Generate a unique, perfectly random integer seed for every temperature
+    std::vector<uint32_t> thread_seeds(temps.size());
+    for (long unsigned int i = 0; i < temps.size(); i++) {
+        thread_seeds[i] = seed_dist(master_gen);
+    }
+
+    std::vector<std::vector<double>> avg_magnetizations(numHSteps, std::vector<double>(numTempSteps));
+
+    // 4. Launch the parallel sweep
+#pragma omp parallel for collapse(2) schedule(dynamic)
+    for (long unsigned int i = 0; i < temps.size(); i++) {
+        for (long unsigned int j = 0; j < h_values.size(); j++) {
+            Material material(n, temps[i], h_values[j], iterations, thread_seeds[i]);
+            material.runSimulation();
+            avg_magnetizations[j][i] = material.getAverageMagnetization();
+            if (j == 0) {
+                std::cout << temps[i] << " " << h_values[j] << std::endl;
+            }
+        }
+    }
+
+    // 5. Save results to NPZ file
+    std::string filename = "output/ising_results.npz";
+    saveResultsToNPZ(avg_magnetizations, temps, h_values, filename);
+
+}
+
+
+
 
 #endif // PROCESSING_H

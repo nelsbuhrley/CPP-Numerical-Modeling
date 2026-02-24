@@ -50,7 +50,7 @@ Thumbs.db
 
 # Output data files
 *.csv
-*.npz
+# *.npz
 
 # Anamations
 *.mp4
@@ -58,9 +58,9 @@ Thumbs.db
 *.mov
 
 # Plots
-*.png
-*.jpg
-*.jpeg
+# *.png
+# *.jpg
+# *.jpeg
 
 # Temporary files
 *~

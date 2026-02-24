@@ -27,7 +27,7 @@ INCLUDE_DIR = include
 BIN_DIR = bin
 
 # Sources and headers
-SOURCES = main.cpp
+SOURCES = main.cpp ../src/cnpy.cpp
 HEADERS = $(wildcard $(INCLUDE_DIR)/*.h)
 
 # Executable name
