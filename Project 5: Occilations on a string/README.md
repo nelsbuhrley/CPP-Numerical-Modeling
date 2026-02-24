@@ -160,7 +160,7 @@ for (int i = 0; i < segments; i++) FFTatPoint(i);  // Each i writes only fftMagn
 | **Spatial truncation error** | Central difference is $\mathcal{O}(\Delta x^2)$ accurate | Increase `segments`; error quarters with each doubling of grid |
 | **Temporal truncation error** | Explicit scheme is $\mathcal{O}(\Delta t^2)$ accurate | $\Delta t$ is auto-chosen at 95% of the stability limit |
 | **Numerical dispersion** | Finite difference stencils introduce a speed error that grows with frequency | Use finer grids; higher-order stencils |
-| **CFL instability** | If stiffness or grid is changed manually outside the constructor | Always construct via the `string(...)` API — $r$ is computed automatically |
+| **CFL instability** | If stiffness or grid is changed manually outside the constructor | Always construct via the `string(...)` Class — $r$ is computed automatically |
 | **Spectral leakage** | FFT assumes periodicity; non-periodic signals leak power between bins | Apply a windowing function (e.g., Hann) to the time series before FFT |
 | **Fixed boundary only** | Free-end boundary conditions noted as not yet implemented | Extend the ghost-cell logic in `simulate()` for Neumann conditions |
 
@@ -180,11 +180,11 @@ The Python script [plotting.py](plotting.py) loads the `.npz` archive and produc
 
 ```
 ┌────────────────────────┬────────────────────────┐
-│  Initial Displacement  │   Mean Power Spectrum   │
-│       (t = 0)          │     (log-scale, Hz)     │
+│  Initial Displacement  │   Mean Power Spectrum  │
+│       (t = 0)          │     (log-scale, Hz)    │
 ├────────────────────────┴────────────────────────┤
-│         String Propagation Animation             │
-│           (full time evolution)                  │
+│         String Propagation Animation            │
+│           (full time evolution)                 │
 └─────────────────────────────────────────────────┘
 ```
 
