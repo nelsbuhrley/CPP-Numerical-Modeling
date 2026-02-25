@@ -2,8 +2,10 @@
 #include <cmath>
 #include <cstdint>
 #include <filesystem>
+#include <filesystem>
 #include <fstream>
 #include <iostream>
+#include <random>
 #include <random>
 #include <string>
 #include <vector>
@@ -65,6 +67,7 @@ class Material {
         precalculateEnergyTables();
     }
 
+    // Accessor and mutator for spins at specific lattice coordinates (x, y, z)
     inline int8_t getSpin(int x, int y, int z) {
         return spins[x * n * n + y * n + z];
     }
@@ -73,6 +76,11 @@ class Material {
         spins[x * n * n + y * n + z] = value;
     }
 
+    /**
+     * @brief Initializes the spins of the lattice randomly to either +1 or -1.
+     * Each spin is assigned a value based on a uniform distribution, ensuring an equal probability of being +1 or -1.
+     * The method iterates through the inner lattice (excluding the boundary layers)
+     */
     void initializeSpinsRandomly() {
         currentTotalMagnetization = 0;
         spins.resize(n * n * n);
@@ -86,6 +94,13 @@ class Material {
         }
     }
 
+    /**
+     * @brief Initializes the spins of the lattice to a uniform value, either +1 or -1.
+     * This method fills the entire inner lattice (excluding the boundary layers) with the specified spin value.
+     * The spin value must be either +1 or -1; otherwise, an exception is thrown.
+     *
+     * @param spinValue The uniform spin value to initialize the lattice with (+1 or -1).
+     */
     void initializeSpinsUniformly(int8_t spinValue) {
         if (spinValue != 1 && spinValue != -1) {
             throw std::invalid_argument("Spin value must be +1 or -1");
@@ -94,6 +109,11 @@ class Material {
         currentTotalMagnetization = spinValue * N;
     }
 
+    /**
+     * @brief Precalculates the energy tables for efficient simulation.
+     * This method precomputes the energy differences and corresponding exponential factors for all possible spin configurations.
+     * The precomputed values are used during the simulation to avoid redundant calculations.
+     */
     void precalculateEnergyTables() {
         int8_t neighborValues[7] = {-6, -4, -2, 0, 2, 4, 6};
         int8_t spinValues[2] = {-1, 1};
@@ -108,6 +128,10 @@ class Material {
         }
     }
 
+    /**
+     * @brief Establishes the random number generator for the simulation in a thread-safe manner.
+     * This method initializes the Mersenne Twister RNG with a unique seed for each thread
+     */
     void establishRNG() {
         // Thread-safe random number generator setup
         gen = std::mt19937(seed);
@@ -128,6 +152,12 @@ class Material {
         }
     }
 
+    /**
+     * @brief Performs one iteration of the Metropolis algorithm across the entire lattice.
+     * The method consists of two main parts:
+     * 1. Updating the boundary conditions: The outer layers of the lattice are updated to mirror the inner lattice, ensuring periodic boundary conditions.
+     * 2. Iterating through the inner lattice: The method iterates through the inner lattice (excluding the boundary layers) in a Black and Red pattern and attempts to flip spins based on their coordinates.
+     */
     void iteration() {
         int x, y, z;
         for (x = 0; x < n; x++) {
@@ -165,6 +195,12 @@ class Material {
         }
     }
 
+    /**
+     * @brief Runs the full simulation for the specified number of iterations.
+     * This method repeatedly calls the iteration() method, which performs one iteration of the Metropolis
+     * algorithm across the entire lattice, for the total number of iterations specified in the constructor.
+     * The method allows the simulation to evolve over time, enabling the system to reach equilibrium and
+     */
     void runSimulation() {
         float sum_magnetization = 0.0;
         float sum_magnetization_squared = 0.0;

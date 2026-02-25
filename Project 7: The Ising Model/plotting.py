@@ -10,7 +10,7 @@ VIEW_ELEVATION = 25
 VIEW_AZIMUTH = 45
 
 # Set to True to save multiple rotations of the 3D plot
-SAVE_MULTIPLE_ANGLES = True
+SAVE_MULTIPLE_ANGLES = False
 
 # Angles to save if SAVE_MULTIPLE_ANGLES is True
 ROTATION_ANGLES = [(25, 45), (25, 135), (25, 225), (25, 315)]
@@ -51,6 +51,7 @@ def save_3d_plot(elev, azim, output_suffix=''):
 
     plt.tight_layout()
 
+    plt.show()
     # Save the 3D plot
     filename = f'output/magnetization_3d_surface{output_suffix}.png'
     plt.savefig(filename, dpi=600, bbox_inches='tight')
