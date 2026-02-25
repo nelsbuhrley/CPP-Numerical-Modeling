@@ -1,6 +1,14 @@
 CXX = g++
-CXXFLAGS = -std=c++17 -Iinclude -I../include -I/usr/local/opt/libomp/include -Xpreprocessor -fopenmp
-LDFLAGS = -L/usr/local/opt/libomp/lib -lomp -lz
+
+# Detect platform: Linux uses -fopenmp directly; macOS needs libomp from Homebrew
+UNAME := $(shell uname)
+ifeq ($(UNAME), Darwin)
+    CXXFLAGS = -std=c++17 -Iinclude -I../include -I/usr/local/opt/libomp/include -Xpreprocessor -fopenmp
+    LDFLAGS  = -L/usr/local/opt/libomp/lib -lomp -lz
+else
+    CXXFLAGS = -std=c++17 -Iinclude -I../include -fopenmp
+    LDFLAGS  = -fopenmp -lz
+endif
 
 DEBUG_FLAGS = -O0 -g \
 	-Wall \
