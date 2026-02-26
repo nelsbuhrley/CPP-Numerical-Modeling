@@ -46,8 +46,8 @@ All simulation logic lives in two files:
 
 | File | Role |
 |---|---|
-| `main.cpp` | Sets parameters and calls `runIsingSimulation()` |
-| `processing.h` | `Material` class, Metropolis engine, parallel sweep, NPZ output |
+| `main.cpp` | Sets parameters, constructs `Simulation`, calls `runIsingSimulation()` |
+| `processing.h` | `Material` class (Metropolis engine), `Simulation` class (sweep, analysis, I/O) |
 
 ### `Material` Class
 
@@ -101,11 +101,12 @@ void flipSpin(int x, int y, int z) {
     if (deltaE_table[spinState][neighborstate] <= 0 ||
         distribution(gen) < exp_table[spinState][neighborstate]) {
         setSpin(x, y, z, -getSpin(x, y, z));
+        currentTotalMagnetization += 2 * getSpin(x, y, z);  // incremental update
     }
 }
 ```
 
-The Metropolis acceptance rule is satisfied: always flip if $\Delta E \leq 0$, otherwise flip with probability $e^{-\Delta E/T}$.
+The Metropolis acceptance rule is satisfied: always flip if $\Delta E \leq 0$, otherwise flip with probability $e^{-\Delta E/T}$. When a flip occurs, `currentTotalMagnetization` is updated by $\pm 2$ rather than recomputed — avoiding an $O(N^3)$ sum every step.
 
 ---
 
@@ -150,35 +151,88 @@ The parity offset `(x+y)%2` selects the correct starting $z$ so every visited si
 
 ---
 
-#### `runSimulation()` and `getAverageMagnetization()`
+#### `runSimulation()` and `MagneticSusceptibility()`
 
+`runSimulation()` runs in two phases:
+
+**Phase 1 — Burn-in (100 sweeps, hardcoded):**
 ```cpp
-void runSimulation() {
-    for (int i = 0; i < numIterations; i++) iteration();
+for (int i = 0; i < 100; i++) iteration();
+```
+These sweeps allow the system to reach thermal equilibrium from its initial state without contributing to any observable. The initial spin state (random or uniform) is forgotten here.
+
+**Phase 2 — Measurement (`numIterations` sweeps):**
+```cpp
+for (int i = 0; i < numIterations; i++) {
+    iteration();
+    float m = (float)currentTotalMagnetization / N;
+    sum_magnetization        += m;
+    sum_magnetization_squared += m * m;
+    sum_abs_magnetization    += std::abs(m);
 }
+averageAbsMagnetization     = sum_abs_magnetization     / numIterations;
+averagemagnetization        = sum_magnetization          / numIterations;
+averageMagnetizationSquared = sum_magnetization_squared  / numIterations;
 ```
 
-After equilibrating, `getAverageMagnetization()` iterates over the inner lattice (indices 1 to $N$) and returns $\sum \sigma_i / N^3$.
+After each sweep, the instantaneous magnetization per spin $m = M_\text{total}/N^3$ is read from `currentTotalMagnetization` (maintained incrementally by `flipSpin`) — no full-lattice sum is needed. Three accumulators are kept to compute $\langle m \rangle$, $\langle |m| \rangle$, and $\langle m^2 \rangle$.
+
+`MagneticSusceptibility()` is called after the simulation completes and derives $\chi$ from the variance of $|m|$:
+
+$$\chi = \frac{N^3}{T}\left(\langle m^2 \rangle - \langle |m| \rangle^2\right)$$
+
+Using $\langle |m| \rangle$ rather than $\langle m \rangle^2$ avoids cancellation errors in symmetry-broken phases where positive and negative magnetization states are sampled equally, which would drive $\langle m \rangle \to 0$ even deep in the ferromagnetic phase.
 
 ---
 
-### Simulation Pipeline: `runIsingSimulation()`
+### `Simulation` Class
 
-This free function in `processing.h` orchestrates the full parameter sweep:
+The `Simulation` class owns the full parameter sweep, analysis, and output. `main.cpp` constructs one instance and calls `runIsingSimulation()`, which chains three methods:
 
 ```
-1. Build temperature grid:  temps[i]    = tempMin + i * tempStep
-2. Build field grid:        h_values[j] = hMin    + j * hStep
-3. Seed master RNG from std::random_device
-4. Generate thread_seeds[i] — one unique seed per temperature row
-5. Allocate avg_magnetizations[numH][numT]
-6. #pragma omp parallel for collapse(2) schedule(dynamic)
-      for each (T, h) pair:
-          construct Material → runSimulation() → store avg magnetization
-7. saveResultsToNPZ(avg_magnetizations, temps, h_values, filename)
+Simulation::runIsingSimulation()
+    ├── runSimulation()                       — parallel Metropolis sweep
+    ├── findCriticalTemperatureAndCalculateBeta()  — post-process
+    └── saveResults()                         — NPZ + CSV output
 ```
 
-`collapse(2)` flattens the 200×200 grid into 40,000 independent tasks. `schedule(dynamic)` handles load imbalance near $T_c$ where critical slowing down makes some tasks longer. Seeds are generated from a single master RNG before the parallel region to avoid data races — each `Material` then owns its RNG exclusively with no locks needed in the hot loop.
+#### `Simulation::runSimulation()` — Parallel Sweep
+
+```
+1. Generate a unique seed for every (h, T) pair from a master RNG
+2. #pragma omp parallel for collapse(2) schedule(dynamic)
+      for each (T[i], h[j]):
+          Material material(n, T[i], h[j], iterations, +1, seed[j][i])
+          material.runSimulation()
+          avg_magnetizations[j][i]       = material.averageMagnetization
+          magnetic_susceptibilities[j][i] = material.magneticSusceptibility
+```
+
+Each `Material` is initialized with all spins uniformly $+1$ (via the second constructor overload), which biases the system into the ferromagnetic minimum and reduces equilibration time. Seeds are drawn from a 2D array populated by a single-threaded master RNG before the parallel region, eliminating data races on the generator state.
+
+#### `findCriticalTemperatureAndCalculateBeta()` — Critical Analysis
+
+This runs in a second OpenMP parallel loop over field rows `j`:
+
+**Step 1 — Find $T_c$:**  
+The critical temperature for each $h$ value is identified as the temperature where $\chi(T)$ is maximum:
+```cpp
+for (i in 0..numTempSteps)
+    if (magnetic_susceptibilities[j][i] > maxSusceptibility)
+        criticalTempIndex = i;
+critical_temperatures[j] = temperatures[criticalTempIndex];
+```
+This works because $\chi$ diverges (and in a finite system peaks sharply) at $T_c$.
+
+**Step 2 — Fit $\beta$:**  
+Near $T_c$ the order parameter scales as $\langle |m| \rangle \sim (T_c - T)^\beta$. Taking logs gives:
+$$\ln \langle |m| \rangle = \beta \ln(T_c - T) + \text{const}$$
+The code selects up to 40 points just below $T_c$ (filtering out points where $|m| < 0.01$ or $T \geq T_c$ to avoid log-of-zero issues) and fits the slope via ordinary least squares in log-log space:
+```cpp
+slope = (n·ΣlogM·logT - ΣlogM·ΣlogT) / (n·ΣlogT² - (ΣlogT)²)
+beta_exponents[j] = slope;
+```
+The extracted $\beta$ is saved alongside $T_c$ for each field row.
 
 ---
 
@@ -188,7 +242,7 @@ This free function in `processing.h` orchestrates the full parameter sweep:
 |---|---|---|
 | Statistical fluctuations | MC results are stochastic | Increase `iterations`; ensemble-average over seeds |
 | Finite-size effects | Finite $N$ smears the transition; $T_c(N) \neq T_c(\infty)$ | Increase $N$; apply finite-size scaling |
-| Equilibration error | Early sweeps retain memory of the initial state | Discard a burn-in period before measuring |
+| Equilibration error | Early sweeps retain memory of the initial state | 100-sweep burn-in is hardcoded in `runSimulation()`; increase for larger $N$ |
 | Parameter discretization | $T$ and $h$ sampled on finite grids | Increase `tempSteps`/`numHSteps` near $T_c$ |
 
 **Computational complexity** (per $(T,h)$ point): $\mathcal{O}(N^3 \times \text{iterations})$
@@ -221,13 +275,16 @@ make profile-gen && ./bin/main && make profile-use  # Profile-guided optimizatio
 ./bin/main
 ```
 
-Output is saved to `output/ising_results.npz`:
+Output is saved to `output/ising_results.npz` and `output/ising_results.csv`:
 
 | Array | Shape | Description |
 |---|---|---|
-| `avg_magnetizations` | `(N_h, N_T)` | $\langle m \rangle$ at each $(h, T)$ point |
+| `avg_magnetization` | `(N_h, N_T)` | $\langle m \rangle$ at each $(h, T)$ |
+| `magnetic_susceptibility` | `(N_h, N_T)` | $\chi$ at each $(h, T)$ |
 | `temperatures` | `(N_T,)` | Temperature grid |
 | `magnetic_fields` | `(N_h,)` | Magnetic field grid |
+| `critical_temperatures` | `(N_h,)` | $T_c(h)$ — peak susceptibility per field row |
+| `beta_exponents` | `(N_h,)` | Fitted $\beta$ exponent per field row |
 
 ### Visualize
 
@@ -263,6 +320,11 @@ Configured in [main.cpp](main.cpp):
 | Checkerboard (black-red) decomposition | Race-free simultaneous updates within a sweep |
 | Ghost boundary layers | Branch-free periodic boundary enforcement |
 | `int8_t` + flat 1D array | $4\times$ smaller than `int`; cache-friendly $z$-loop |
+| Incremental magnetization tracking | $O(1)$ magnetization update per flip instead of $O(N^3)$ |
+| 100-sweep burn-in | Discards initial transient before measuring observables |
+| Running accumulators for $\langle m \rangle$, $\langle |m| \rangle$, $\langle m^2 \rangle$ | Enables susceptibility and critical-exponent analysis |
+| Peak susceptibility $\to T_c$ | Locates the critical temperature per field row |
+| Log-log OLS regression $\to \beta$ | Extracts the critical exponent from magnetization scaling below $T_c$ |
 | `collapse(2)` + `dynamic` scheduling | Scalable multi-core parallelism across $(T, h)$ |
 | Per-thread Mersenne Twister | Statistically independent, uncorrelated random streams |
 | Profile-guided optimization (PGO) | Compiler uses runtime data for branch prediction and inlining |
