@@ -122,7 +122,7 @@ Rather than wrapping indices on every neighbor access, the $(N+2)^3$ lattice car
 // Z faces
 for (x) for (y) {
     setSpin(x, y, 0,   getSpin(x, y, n-2));   // bottom ghost ← top interior
-    setSpin(x, y, n-1, getSpin(x, y, 1));     // top ghost    ← bottom interior
+    setSpin(x, y, n-1, getSpin(x, y, 1));     // top ghost ← bottom interior
 }
 // Y and X faces updated the same way
 ```
@@ -155,9 +155,9 @@ The parity offset `(x+y)%2` selects the correct starting $z$ so every visited si
 
 `runSimulation()` runs in two phases:
 
-**Phase 1 — Burn-in (100 sweeps, hardcoded):**
+**Phase 1 — Burn-in (5 * n sweeps):**
 ```cpp
-for (int i = 0; i < 100; i++) iteration();
+for (int i = 0; i < 5 * n; i++) iteration();
 ```
 These sweeps allow the system to reach thermal equilibrium from its initial state without contributing to any observable. The initial spin state (random or uniform) is forgotten here.
 
@@ -214,7 +214,7 @@ Each `Material` is initialized with all spins uniformly $+1$ (via the second con
 
 This runs in a second OpenMP parallel loop over field rows `j`:
 
-**Step 1 — Find $T_c$:**  
+**Step 1 — Find $T_c$:**
 The critical temperature for each $h$ value is identified as the temperature where $\chi(T)$ is maximum:
 ```cpp
 for (i in 0..numTempSteps)
@@ -224,7 +224,7 @@ critical_temperatures[j] = temperatures[criticalTempIndex];
 ```
 This works because $\chi$ diverges (and in a finite system peaks sharply) at $T_c$.
 
-**Step 2 — Fit $\beta$:**  
+**Step 2 — Fit $\beta$:**
 Near $T_c$ the order parameter scales as $\langle |m| \rangle \sim (T_c - T)^\beta$. Taking logs gives:
 $$\ln \langle |m| \rangle = \beta \ln(T_c - T) + \text{const}$$
 The code selects up to 40 points just below $T_c$ (filtering out points where $|m| < 0.01$ or $T \geq T_c$ to avoid log-of-zero issues) and fits the slope via ordinary least squares in log-log space:

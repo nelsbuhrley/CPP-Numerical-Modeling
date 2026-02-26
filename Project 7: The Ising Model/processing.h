@@ -206,7 +206,7 @@ class Material {
         float sum_magnetization_squared = 0.0;
         float sum_abs_magnetization = 0.0;
 
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 5 * n; i++) {
             iteration();
         }
         for (int i = 0; i < numIterations; i++) {
