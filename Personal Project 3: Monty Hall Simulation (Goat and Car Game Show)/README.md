@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://nelsbuhrley.github.io/CPP-Numerical-Modeling/#personal-projects"><strong>← Back to Portfolio Hub</strong></a>
+  <a href="https://nels.buhrley.com/CPP-Numerical-Modeling/#personal-projects"><strong>← Back to Portfolio Hub</strong></a>
 </p>
 
 # Personal Project 3: The Monty Hall Problem — A Probabilistic Paradox
@@ -210,5 +210,5 @@ Personal Project 3: Monty Hall Simulation (Goat and Car Game Show)/
 - Selvin, Steve. "A Problem in Probability." *American Statistician*, 1975.
 
 <p align="center">
-  <a href="https://nelsbuhrley.github.io/CPP-Numerical-Modeling/#personal-projects"><strong>← Back to Portfolio Hub</strong></a>
+  <a href="https://nels.buhrley.com/CPP-Numerical-Modeling/#personal-projects"><strong>← Back to Portfolio Hub</strong></a>
 </p>

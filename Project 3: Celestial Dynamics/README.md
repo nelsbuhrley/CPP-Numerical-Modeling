@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://nelsbuhrley.github.io/CPP-Numerical-Modeling/#academic-projects"><strong>← Back to Portfolio Hub</strong></a>
+  <a href="https://nels.buhrley.com/CPP-Numerical-Modeling/#academic-projects"><strong>← Back to Portfolio Hub</strong></a>
 </p>
 
 # Project 3: Celestial Dynamics — N-Body Gravitational Simulation
@@ -204,7 +204,7 @@ The interactive menu offers three modes:
 
 <p align="center">
   <video width="70%" controls autoplay muted loop style="border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
-    <source src="https://nelsbuhrley.github.io/CPP-Numerical-Modeling/assets/videos/celestial_analysis_11_3d.mp4" type="video/mp4">
+    <source src="https://nels.buhrley.com/CPP-Numerical-Modeling/assets/videos/celestial_analysis_11_3d.mp4" type="video/mp4">
     Your browser does not support the video tag.
   </video>
   <br>
@@ -324,5 +324,5 @@ Project 3: Celestial Dynamics/
 *Nels Buhrley — Computational Physics, 2025*
 
 <p align="center">
-  <a href="https://nelsbuhrley.github.io/CPP-Numerical-Modeling/#academic-projects"><strong>← Back to Portfolio Hub</strong></a>
+  <a href="https://nels.buhrley.com/CPP-Numerical-Modeling/#academic-projects"><strong>← Back to Portfolio Hub</strong></a>
 </p>

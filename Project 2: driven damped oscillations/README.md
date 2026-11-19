@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://nelsbuhrley.github.io/CPP-Numerical-Modeling/#academic-projects"><strong>← Back to Portfolio Hub</strong></a>
+  <a href="https://nels.buhrley.com/CPP-Numerical-Modeling/#academic-projects"><strong>← Back to Portfolio Hub</strong></a>
 </p>
 
 # Project 2: Driven Damped Pendulum — Route to Chaos
@@ -270,5 +270,5 @@ Project 2: driven damped oscillations/
 *Nels Buhrley — Computational Physics, 2025*
 
 <p align="center">
-  <a href="https://nelsbuhrley.github.io/CPP-Numerical-Modeling/#academic-projects"><strong>← Back to Portfolio Hub</strong></a>
+  <a href="https://nels.buhrley.com/CPP-Numerical-Modeling/#academic-projects"><strong>← Back to Portfolio Hub</strong></a>
 </p>

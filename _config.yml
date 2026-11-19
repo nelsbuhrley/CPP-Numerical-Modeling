@@ -13,7 +13,7 @@ description: >-
   built with OpenMP parallelism and deployed on the BYU Supercomputer.
 author: "Nels Buhrley"
 baseurl: "/CPP-Numerical-Modeling"
-url: "https://nelsbuhrley.github.io"
+url: "https://nels.buhrley.com"
 
 # Google Analytics
 google_analytics: "G-V5N2Q8MP3T"  # Replace with your GA4 Measurement ID

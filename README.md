@@ -84,14 +84,14 @@ The projects follow a deliberate arc of increasing computational sophistication:
 
 <div style="width: 100%; aspect-ratio: 16 / 9; max-height: 80vh; overflow: hidden; border: 1px solid #ddd; border-radius: 8px;">
 <iframe
-  src="https://nelsbuhrley.github.io/CPP-Numerical-Modeling/assets/html-assets/magnetization_3d_interactive_embedded.html"
+  src="https://nels.buhrley.com/CPP-Numerical-Modeling/assets/html-assets/magnetization_3d_interactive_embedded.html"
   width="100%"
   height="100%"
   style="border: none; display: block;">
 </iframe>
 </div>
 
-<a href="https://nelsbuhrley.github.io/CPP-Numerical-Modeling/assets/html-assets/magnetization_3d_interactive.html" target="_blank">View Simulation Fullscreen ↗️</a>
+<a href="https://nels.buhrley.com/CPP-Numerical-Modeling/assets/html-assets/magnetization_3d_interactive.html" target="_blank">View Simulation Fullscreen ↗️</a>
 
 <p align="center">
   <img src="Project%207%3A%20The%20Ising%20Model/output/Out_2/magnetization_3d_surface_angle3.png" alt="Ising Model — 3D magnetization surface" width="48%"/>
@@ -108,7 +108,7 @@ Magnetization surface and contour map of the 3D Ising model, revealing the ferro
 
 <p align="center">
   <video width="70%" controls autoplay muted loop style="border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
-    <source src="https://nelsbuhrley.github.io/assets/videos/md_animation2.mp4" type="video/mp4">
+    <source src="https://nels.buhrley.com/assets/videos/md_animation2.mp4" type="video/mp4">
     Your browser does not support the video tag.
   </video>
   <br>
@@ -123,14 +123,14 @@ Magnetization surface and contour map of the 3D Ising model, revealing the ferro
 
 <div style="width: 100%; aspect-ratio: 16 / 9; max-height: 80vh; overflow: hidden; border: 1px solid #ddd; border-radius: 8px;">
 <iframe
-  src="https://nelsbuhrley.github.io/CPP-Numerical-Modeling/assets/html-assets/potential_3d_interactive_dynamic_embedded.html"
+  src="https://nels.buhrley.com/CPP-Numerical-Modeling/assets/html-assets/potential_3d_interactive_dynamic_embedded.html"
   width="100%"
   height="100%"
   style="border: none; display: block;">
 </iframe>
 </div>
 
-<a href="https://nelsbuhrley.github.io/CPP-Numerical-Modeling/assets/html-assets/potential_3d_interactive_dynamic.html" target="_blank">View Simulation Fullscreen ↗️</a>
+<a href="https://nels.buhrley.com/CPP-Numerical-Modeling/assets/html-assets/potential_3d_interactive_dynamic.html" target="_blank">View Simulation Fullscreen ↗️</a>
 
 Interactive 3D visualization of electrostatic potential field solved via Successive Over-Relaxation (SOR) with optimal relaxation parameter $\omega \approx 1.84$. Navigate through z-axis slices to explore the full 3D solution space ($N=1000^3$ grid points).
 
@@ -145,7 +145,7 @@ videos/
 <p align="center">
   <img src="Project%203%3A%20Celestial%20Dynamics/Output/celestial_analysis_9_3d.png" alt="Celestial Dynamics — 3D orbits" width="42%"/>
   <video width="54%" controls autoplay muted loop style="border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
-    <source src="https://nelsbuhrley.github.io/assets/videos/celestial_analysis_11_3d.mp4" type="video/mp4">
+    <source src="https://nels.buhrley.com/assets/videos/celestial_analysis_11_3d.mp4" type="video/mp4">
     Your browser does not support the video tag.
   </video>
   <br>
@@ -164,14 +164,14 @@ N-body orbital dynamics of the Solar System computed with 4th-order Runge-Kutta 
 
 <div style="width: 100%; aspect-ratio: 1 / 1; overflow: hidden; border: 1px solid #ddd; border-radius: 8px;">
 <iframe
-  src="https://nelsbuhrley.github.io/assets/html-assets/eigenstates_tabs.html"
+  src="https://nels.buhrley.com/assets/html-assets/eigenstates_tabs.html"
   width="100%"
   height="100%"
   style="border: none; display: block;">
 </iframe>
 </div>
 
-<a href="https://nelsbuhrley.github.io/assets/html-assets/eigenstates_tabs.html" target="_blank">View Eigenstates Fullscreen ↗️</a>
+<a href="https://nels.buhrley.com/assets/html-assets/eigenstates_tabs.html" target="_blank">View Eigenstates Fullscreen ↗️</a>
 
 Interactive visualization of bound states for symmetric polynomial potential wells (even degrees: 2, 4, 6, 8, 10). Each tab displays eigenstates with 3D wavefunction plots overlaid with the potential well shape. Eigenstates computed via Numerov 4th-order integration, energy quantization by nodal counting, and dual-method bisection refinement (selectable shooting method with forward integration or matching method with origin-centric convergence) achieving high precision ($\Delta E < 10^{-8}$).
 

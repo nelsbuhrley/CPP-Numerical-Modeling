@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://nelsbuhrley.github.io/CPP-Numerical-Modeling/#academic-projects"><strong>← Back to Portfolio Hub</strong></a>
+  <a href="https://nels.buhrley.com/CPP-Numerical-Modeling/#academic-projects"><strong>← Back to Portfolio Hub</strong></a>
 </p>
 
 # Project 5: Oscillations on a String
@@ -301,7 +301,7 @@ L, c, kappa, r, dt = data["parameters"]
 
 <p align="center">
   <video width="70%" controls autoplay muted loop style="border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
-    <source src="https://nelsbuhrley.github.io/CPP-Numerical-Modeling/assets/videos/string_oscillations.mp4" type="video/mp4">
+    <source src="https://nels.buhrley.com/CPP-Numerical-Modeling/assets/videos/string_oscillations.mp4" type="video/mp4">
     Your browser does not support the video tag.
   </video>
   <br>
@@ -422,5 +422,5 @@ Project 5: Occilations on a string/
 *Nels Buhrley — Computational Physics, 2026*
 
 <p align="center">
-  <a href="https://nelsbuhrley.github.io/CPP-Numerical-Modeling/#academic-projects"><strong>← Back to Portfolio Hub</strong></a>
+  <a href="https://nels.buhrley.com/CPP-Numerical-Modeling/#academic-projects"><strong>← Back to Portfolio Hub</strong></a>
 </p>
