@@ -276,6 +276,49 @@
         syncExpandedState();
     }
 
+
+    function addSiteLinks() {
+        var mainSite = "https://nels.buhrley.com/";
+        var base = getBaseUrl() + "/";
+        var path = window.location.pathname.replace(/index\.html$/, "");
+        var header = document.querySelector(".page-header");
+
+        if (header && path.indexOf(base) === 0 && !header.querySelector(".site-breadcrumb")) {
+            var items = '<li><a href="' + mainSite + '">Home</a></li>';
+            if (path === base) {
+                items += '<li aria-current="page">Computational Physics Portfolio</li>';
+            } else {
+                var title = "";
+                navLinks.forEach(function (item) {
+                    if (item.href !== "/" && decodeURIComponent(path).indexOf(decodeURIComponent(buildPageUrl(item.href))) === 0) {
+                        title = item.title;
+                    }
+                });
+                if (!title) {
+                    var h1 = document.querySelector(".main-content h1");
+                    title = h1 ? h1.textContent.trim() : document.title;
+                }
+                var safe = document.createElement("span");
+                safe.textContent = title;
+                items += '<li><a href="' + base + '">Computational Physics Portfolio</a></li>' +
+                    '<li aria-current="page">' + safe.innerHTML + '</li>';
+            }
+            var crumbs = document.createElement("nav");
+            crumbs.className = "site-breadcrumb";
+            crumbs.setAttribute("aria-label", "Breadcrumb");
+            crumbs.innerHTML = "<ol>" + items + "</ol>";
+            header.insertBefore(crumbs, header.firstChild);
+        }
+
+        var footer = document.querySelector(".site-footer");
+        if (footer && !footer.querySelector(".site-footer-home")) {
+            var back = document.createElement("p");
+            back.className = "site-footer-home";
+            back.innerHTML = '<a href="' + mainSite + '">&larr; Back to nels.buhrley.com</a>';
+            footer.appendChild(back);
+        }
+    }
+
     function initializeMenu() {
         var themeChoice = getStoredTheme();
         var motionChoice = getStoredMotion();
@@ -292,9 +335,11 @@
         if (document.readyState === "loading") {
             document.addEventListener("DOMContentLoaded", function () {
                 buildMenu(themeChoice, motionChoice);
+                addSiteLinks();
             });
         } else {
             buildMenu(themeChoice, motionChoice);
+            addSiteLinks();
         }
     }
 
